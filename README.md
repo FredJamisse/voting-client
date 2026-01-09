@@ -27,9 +27,9 @@ scoop install grpcurl
 
 grpcurl --version
 
-**Execução
-1. Clonar o repositório**
-git clone https://github.com/<teu-username>/voting-client.git
+**Execução**
+1. Clonar o repositório
+git clone https://github.com/FredJamisse/voting-client.git
 cd voting-client
 
 2. Instalar dependências
@@ -39,14 +39,14 @@ npm install
 node server.js
 
 
-Deverá surgir:
+**Deverá surgir:**
 
 Voting Web Client at http://localhost:3000
 
 4. Abrir no browser
 http://localhost:3000
 
-Notas
+**Notas**
 
 A aplicação comunica com serviços gRPC remotos que utilizam TLS com certificados autoassinados.
 
