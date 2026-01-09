@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Voting System – Web Client</title>
+
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+</head>
+
+<body class="bg-light">
+  <div class="container my-5">
+    <div class="text-center mb-4">
+      <h1 class="mb-1">🗳️ Voting System</h1>
+      <div class="text-muted">Cliente Web para teste de serviços gRPC</div>
+    </div>
+
+    <!-- Alerts -->
+    <div id="alertArea"></div>
+
+    <!-- STEP 1: Credential -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header fw-bold">1️⃣ Emissão de Credencial</div>
+      <div class="card-body">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-8">
+            <label class="form-label">Número do Cartão de Cidadão</label>
+            <input id="citizen" class="form-control" placeholder="ex: 123456789" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label d-none d-md-block">&nbsp;</label>
+            <button id="btnCredential" class="btn btn-primary w-100" onclick="getCredential()">
+              Obter Credencial
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <div class="d-flex gap-2 flex-wrap">
+            <span class="badge text-bg-secondary">Dica:</span>
+            <span class="text-muted">
+              Se a credencial vier como <code>INVALID-...</code>, pede outra. As credenciais aceites são
+              <code>CRED-ABC-123</code>, <code>CRED-DEF-456</code>, <code>CRED-GHI-789</code>.
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="fw-semibold">Resultado (resumo)</div>
+            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#credJson">
+              Ver JSON
+            </button>
+          </div>
+          <div class="mt-2 p-3 bg-white border rounded">
+            <div><span class="text-muted">Elegível:</span> <span id="credEligible">—</span></div>
+            <div><span class="text-muted">Credencial:</span> <code id="credValue">—</code></div>
+          </div>
+
+          <div class="collapse mt-2" id="credJson">
+            <pre id="credentialJson" class="bg-dark text-light p-3 rounded small mb-0"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: Candidates -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header fw-bold">2️⃣ Lista de Candidatos</div>
+      <div class="card-body">
+        <div class="d-flex gap-2 flex-wrap">
+          <button id="btnCandidates" class="btn btn-secondary" onclick="getCandidates()">Carregar candidatos</button>
+          <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#candJson">
+            Ver JSON
+          </button>
+        </div>
+
+        <div class="table-responsive mt-3">
+          <table class="table table-sm table-striped align-middle mb-0">
+            <thead>
+              <tr>
+                <th style="width: 80px;">ID</th>
+                <th>Nome</th>
+                <th style="width: 180px;">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="candidatesTableBody">
+              <tr><td colspan="3" class="text-muted">Ainda não carregado.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="collapse mt-3" id="candJson">
+          <pre id="candidatesJson" class="bg-dark text-light p-3 rounded small mb-0"></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: Vote -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header fw-bold">3️⃣ Votação</div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label">Credencial de Voto</label>
+            <input id="credential" class="form-control" placeholder="ex: CRED-ABC-123" />
+            <div class="form-text">A credencial pode ser preenchida automaticamente após emissão.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">ID do Candidato</label>
+            <input id="candidateId" type="number" class="form-control" placeholder="1, 2, 3..." />
+            <div class="form-text">Podes escolher pela tabela de candidatos.</div>
+          </div>
+          <div class="col-md-2 d-grid">
+            <label class="form-label d-none d-md-block">&nbsp;</label>
+            <button id="btnVote" class="btn btn-success" onclick="submitVote()">Votar</button>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="fw-semibold">Resposta</div>
+            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#voteJson">
+              Ver JSON
+            </button>
+          </div>
+          <div class="mt-2 p-3 bg-white border rounded">
+            <div><span class="text-muted">Estado:</span> <span id="voteStatus">—</span></div>
+            <div><span class="text-muted">Mensagem:</span> <span id="voteMessage">—</span></div>
+          </div>
+
+          <div class="collapse mt-2" id="voteJson">
+            <pre id="voteJsonPre" class="bg-dark text-light p-3 rounded small mb-0"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: Results -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header fw-bold">4️⃣ Resultados</div>
+      <div class="card-body">
+        <div class="d-flex gap-2 flex-wrap">
+          <button id="btnResults" class="btn btn-dark" onclick="getResults()">Carregar resultados</button>
+          <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#resJson">
+            Ver JSON
+          </button>
+        </div>
+
+        <div class="table-responsive mt-3">
+          <table class="table table-sm table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th style="width: 80px;">ID</th>
+                <th>Nome</th>
+                <th style="width: 120px;">Votos</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody">
+              <tr><td colspan="3" class="text-muted">Ainda não carregado.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="collapse mt-3" id="resJson">
+          <pre id="resultsJson" class="bg-dark text-light p-3 rounded small mb-0"></pre>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center text-muted mt-4">
+      <small>Projeto académico – Integração de Sistemas (MEIW)</small>
+    </footer>
+  </div>
+
+  <!-- Bootstrap JS (para collapse) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="script.js"></script>
+</body>
+</html>
