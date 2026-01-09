@@ -9,6 +9,7 @@ Requisitos**
 
 **Instalar grpcurl**
 **macOS**
+
 brew install grpcurl
 
 **Windows**
@@ -29,14 +30,17 @@ grpcurl --version
 
 **Execução**
 1. Clonar o repositório
+
 git clone https://github.com/FredJamisse/voting-client.git
 
 cd voting-client
 
 2. Instalar dependências
+
 npm install
 
 3. Iniciar a aplicação
+
 node server.js
 
 
