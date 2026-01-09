@@ -1,5 +1,6 @@
-**How to Run
-Requisitos**
+**How to Run**
+
+**Requisitos**
 
 - Node.js (v18 ou superior)
 
@@ -60,5 +61,7 @@ O backend utiliza a ferramenta grpcurl para garantir compatibilidade.
 Apenas as credenciais abaixo são aceites na votação:
 
 CRED-ABC-123
+
 CRED-DEF-456
+
 CRED-GHI-789
